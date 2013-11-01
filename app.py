@@ -3,6 +3,7 @@ import random
 import string
 import json
 import time
+import functools
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -53,7 +54,25 @@ def about():
 def ex(t):
     return flask.Response(t, mimetype='text/x-shellscript')
 
+def curlonly(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        agent = flask.request.headers.get('User-Agent')
+        if 'hash' in kwargs and 'username' in kwargs:
+            g = model.Game.query.filter_by(hash=kwargs['hash']).first()
+            if g is not None:
+                events = json.loads(g.events)
+                events.append((2, time.time(), kwargs['username'] + ' chickened out and tried to take a sneak peek via ' + agent))
+                g.events = json.dumps(events)
+                db.session.commit()
+        if 'curl' in agent.lower():
+            return f(*args, **kwargs)
+        else:
+            return "Curl me to shell if you dare."
+    return wrapper
+
 @app.route('/h/<hash>/<username>')
+@curlonly
 def hash_execute(hash, username):
     g = model.Game.query.filter_by(hash=hash).first()
     if g is None:
@@ -67,6 +86,7 @@ def hash_execute(hash, username):
         return execution.click(hash, command, username)
 
 @app.route('/c/<hash>/<int:level>/<username>')
+@curlonly
 def click(hash, username, level):
     g = model.Game.query.filter_by(hash=hash).first()
     if g is None:
@@ -84,6 +104,7 @@ def click(hash, username, level):
     return ''
 
 @app.route('/b/<hash>/<int:level>/<username>')
+@curlonly
 def bang(hash, username, level):
     g = model.Game.query.filter_by(hash=hash).first()
     if g is None:
