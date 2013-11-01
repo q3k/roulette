@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>russianroulette.sh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="#">Play</a></li>
+          <li><a href="#">About</a></li>
+        </ul>
+        <h3 class="text-muted">russianroulette.sh</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>curl-to-shell russian roulette</h1>
+        <p class="lead">This is your unique game command line. Invite some friends over and see who's the last to chicken out.</p>
+        <div class="well well-sm" style="background-color: #333; color: #eee; font-family: terminus, consolas, inconsolata, courier now, sans-serif;">curl http://russianroulette.sh/h/{{hash}}/NamelessWonder | sh -</div>
+        <p>You are on level {{level}}. Five out of six times, this command line will do nothing. One out of six, it will {{punishement}}. However, the 'barrel' isn't spun between shots - so choose the shot order wisely! Feel free to change 'NamelessWonder' to your favourite username.</p>
+        <h3>Events so far:</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Time</th><th>Event</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in events %}
+            {% if event[0] == 0 %}
+            <tr>
+            {% elif event[0] == 1 %}
+            <tr class="success">
+            {% elif event[0] == 2 %}
+            <tr class="warning">
+            {% elif event[0] == 3 %}
+            <tr class="danger">
+            {% endif %}
+              <td class="datemehard">{{ event[1] }}</td>
+              <td>{{ event[2] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $(".datemehard").each(function(i, e) {
+            // fuck js
+            var d = new Date($(this).text() * 1000);
+            var y = d.getFullYear();
+            var m = d.getMonth() + 1;
+            var day = ("0" + d.getDate()).slice(-2);
+            var h = ("0" + d.getHours()).slice(-2);
+            var mi = ("0" + d.getMinutes()).slice(-2);
+            var s = ("0" + d.getSeconds()).slice(-2);
+            $(this).text(y + '-' + m + '-' + day + ' ' + h + ':' + mi + ':' + s);
+        });
+    </script>
+  </body>
+</html>
+
