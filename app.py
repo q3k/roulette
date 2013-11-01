@@ -46,6 +46,9 @@ def hash_info(hash):
     return flask.render_template('base.html', hash=g.hash, level=g.level,
                                  punishement=description, events=events)
 
+@app.route('/about')
+def about():
+    return flask.render_template('about.html')
 
 def ex(t):
     return flask.Response(t, mimetype='text/x-shellscript')
