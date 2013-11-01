@@ -120,5 +120,13 @@ def bang(hash, username, level):
     db.session.commit()
     return ''
 
+@app.route('/e/<hash>')
+def get_events(hash):
+    g = model.Game.query.filter_by(hash=hash).first()
+    if g is None:
+        return flask.jsonify([])
+    return flask.jsonify(events=json.loads(g.events))
+    
+
 if __name__ == '__main__':
     app.run(debug=True)

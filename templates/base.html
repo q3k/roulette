@@ -35,7 +35,7 @@
               <th>Time</th><th>Event</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="events">
             {% for event in events %}
             {% if event[0] == 0 %}
             <tr>
@@ -60,17 +60,41 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
     <script>
-        $(".datemehard").each(function(i, e) {
+        function format_date(value)
+        {
             // fuck js
-            var d = new Date($(this).text() * 1000);
+            var d = new Date(value);
             var y = d.getFullYear();
             var m = d.getMonth() + 1;
             var day = ("0" + d.getDate()).slice(-2);
             var h = ("0" + d.getHours()).slice(-2);
             var mi = ("0" + d.getMinutes()).slice(-2);
             var s = ("0" + d.getSeconds()).slice(-2);
-            $(this).text(y + '-' + m + '-' + day + ' ' + h + ':' + mi + ':' + s);
-        });
+            return y + '-' + m + '-' + day + ' ' + h + ':' + mi + ':' + s;
+        }
+        function datify()
+        {
+            $(".datemehard").each(function(i, e) {
+                $(this).text(format_date($(this).text() * 1000));
+            });
+        }
+        datify();
+        setInterval(function()
+        {
+            $.getJSON('/e/{{hash}}', function(data)
+            {
+                var result = [];
+                $.each(data.events, function(i, e)
+                {
+                    var open = "<tr>";
+                    if (e[0] == 1) open = '<tr class="success">';
+                    if (e[0] == 2) open = '<tr class="warning">';
+                    if (e[0] == 3) open = '<tr class="danger">';
+                    result.push(open + "<td>" + format_date(e[1] * 1000) + "</td><td>" + e[2] + "</td>");
+                });
+                $("#events").html(result.join(""));
+            });
+        }, 10000);
     </script>
   </body>
 </html>
