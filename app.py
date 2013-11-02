@@ -80,10 +80,10 @@ def hash_execute(hash, username):
     description, command = games.LEVELS[g.level-1]
     if random.random() < (1.0/g.shots):
         # bang!
-        return execution.bang(hash, command, username)
+        return execution.bang(hash, g.level, command, username)
     else:
         # click!
-        return execution.click(hash, command, username)
+        return execution.click(hash, g.level, command, username)
 
 @app.route('/c/<hash>/<int:level>/<username>')
 @curlonly
