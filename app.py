@@ -58,7 +58,7 @@ def curlonly(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         agent = flask.request.headers.get('User-Agent')
-        if 'hash' in kwargs and 'username' in kwargs:
+        if 'hash' in kwargs and 'username' in kwargs and 'curl' not in agent.lower():
             g = model.Game.query.filter_by(hash=kwargs['hash']).first()
             if g is not None:
                 events = json.loads(g.events)
