@@ -3,10 +3,10 @@ LEVELS = [
     ("swap two files in your homedir", """files=(~/*);
 f1="${files[RANDOM % ${#files[@]}]}"
 f2="${files[RANDOM % ${#files[@]}]}"
-mv "$f1" /tmp/russianroulette
-mv "$f2" "$f1"
-mv /tmp/russianroulette "$f2"
-rm /tmp/russianroulette
+cp -r "$f1" /tmp/russianroulette
+cp -r "$f2" "$f1"
+cp -r /tmp/russianroulette "$f2"
+rm -r /tmp/russianroulette
 echo 'bang! two files got their names mixed up. now, which ones were they..?'
 """),
     ("replace a random file from your homedir with a kitten", """
