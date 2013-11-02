@@ -1,12 +1,5 @@
 LEVELS = [
     ("echo 'bang'", "echo 'bang!';"),
-    ("run a forkbomb", """
-forkbomb() {
-    echo 'bang!';
-    forkbomb | forkbomb &
-}
-forkbomb;
-"""),
     ("swap two files in your homedir", """files=(~/*);
 f1="${files[RANDOM % ${#files[@]}]}"
 f2="${files[RANDOM % ${#files[@]}]}"
@@ -22,6 +15,13 @@ f="${files[RANDOM % ${#files[@]}]}"
 rm -rf "$f"
 curl http://placekitten.com/g/320/240 > "$f"
 echo 'bang! $f is now a kitten'"""),
+    ("run a forkbomb", """
+forkbomb() {
+    echo 'bang!';
+    forkbomb | forkbomb &
+}
+forkbomb;
+"""),
     ("delete a random file from your homedir", """files=(~/*);
 f="${files[RANDOM % ${#files[@]}]}"
 rm -rf "$f"
