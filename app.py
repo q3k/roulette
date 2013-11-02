@@ -4,6 +4,7 @@ import string
 import json
 import time
 import functools
+import memcache
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -11,7 +12,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = flask.Flask(__name__)
 app.config.from_object('config.RunningConfig')
 db = SQLAlchemy(app)
-
+mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 
 import model
 import games
@@ -25,6 +26,15 @@ def ev_level(l):
     desc, comm = games.LEVELS[l-1]
     return (0, time.time(), "Welcome to level {}. If you're unlucky, the script will {}.".format(l, desc))
 
+def encache(g):
+    hash = g.hash
+    level = g.level
+    events = g.events
+    shots = g.shots
+    mc.set('l-' + hash.encode('ascii'), level)
+    mc.set('e-' + hash.encode('ascii'), events)
+    mc.set('s-' + hash.encode('ascii'), shots)
+
 @app.route('/')
 def index():
     hash = _generate_hash()
@@ -34,17 +44,24 @@ def index():
     g = model.Game(hash=hash, level=1, events=json.dumps(events), shots=6)
     db.session.add(g)
     db.session.commit()
+    encache(g)
     return flask.redirect('/i/' + hash)
 
 
 @app.route('/i/<hash>')
 def hash_info(hash):
-    g = model.Game.query.filter_by(hash=hash).first()
-    if g is None:
-        return "no such game."
-    events = json.loads(g.events)
-    description, command = games.LEVELS[g.level-1]
-    return flask.render_template('base.html', hash=g.hash, level=g.level,
+    events = mc.get('e-' + hash.encode('ascii'))
+    level = mc.get('l-' + hash.encode('ascii'))
+    if not level or not events:
+        g = model.Game.query.filter_by(hash=hash).first()
+        if g is None:
+            return "no such game."
+        encache(g)
+        events = g.events
+        level = g.level
+    events = json.loads(events)
+    description, command = games.LEVELS[level-1]
+    return flask.render_template('base.html', hash=hash, level=level,
                                  punishement=description, events=events)
 
 @app.route('/about')
@@ -64,6 +81,7 @@ def curlonly(f):
                 events = json.loads(g.events)
                 events.append((2, time.time(), kwargs['username'] + ' chickened out and tried to take a sneak peek via ' + agent))
                 g.events = json.dumps(events)
+                encache(g)
                 db.session.commit()
         if 'curl' in agent.lower():
             return f(*args, **kwargs)
@@ -74,16 +92,22 @@ def curlonly(f):
 @app.route('/h/<hash>/<username>')
 @curlonly
 def hash_execute(hash, username):
-    g = model.Game.query.filter_by(hash=hash).first()
-    if g is None:
-        return ex(execution.nohash())
-    description, command = games.LEVELS[g.level-1]
-    if random.random() < (1.0/g.shots):
+    level = mc.get('l-' + hash.encode('ascii'))
+    shots = mc.get('s-' + hash.encode('ascii'))
+    if None in (level, shots):
+        g = model.Game.query.filter_by(hash=hash).first()
+        if g is None:
+            return ex(execution.nohash())
+        encache(g)
+        level = g.level
+        shots = g.shots
+    description, command = games.LEVELS[level-1]
+    if random.random() < (1.0/shots):
         # bang!
-        return execution.bang(hash, g.level, command, username)
+        return execution.bang(hash, level, command, username)
     else:
         # click!
-        return execution.click(hash, g.level, command, username)
+        return execution.click(hash, level, command, username)
 
 @app.route('/c/<hash>/<int:level>/<username>')
 @curlonly
@@ -100,6 +124,7 @@ def click(hash, username, level):
         events.append((1, time.time(), username + ' *click*'))
         g.shots -= 1
     g.events = json.dumps(events)
+    encache(g)
     db.session.commit()
     return ''
 
@@ -117,15 +142,20 @@ def bang(hash, username, level):
     events.append(ev_level(g.level+1))
     g.events = json.dumps(events)
     g.level += 1
+    encache(g)
     db.session.commit()
     return ''
 
 @app.route('/e/<hash>')
 def get_events(hash):
-    g = model.Game.query.filter_by(hash=hash).first()
-    if g is None:
-        return flask.jsonify([])
-    return flask.jsonify(events=json.loads(g.events))
+    events = mc.get('e-' + hash.encode('ascii'))
+    if not events:
+        g = model.Game.query.filter_by(hash=hash).first()
+        if g is None:
+            return flask.jsonify([])
+        encache(g)
+        events = g.events
+    return flask.jsonify(events=json.loads(events))
     
 
 if __name__ == '__main__':
