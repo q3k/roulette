@@ -5,12 +5,12 @@ def bang(hash, level, command, username):
     data = "#!/bin/sh\n"
     data += "( "
     data += command
-    data += " ) && curl -silent -o /dev/null http://russianroulette.sh/b/{}/{}/{}".format(hash, level, username)
+    data += " ) && curl --silent -o /dev/null http://russianroulette.sh/b/{}/{}/{}".format(hash, level, username)
     data += "\n"
     return data
 
 def click(hash, level, command, username):
     data = "#!/bin/sh\n"
-    data += "( echo 'click!' ) && curl -silent -o /dev/null http://russianroulette.sh/c/{}/{}/{}".format(hash, level, username)
+    data += "( echo 'click!' ) && curl --silent -o /dev/null http://russianroulette.sh/c/{}/{}/{}".format(hash, level, username)
     data += "\n"
     return data
