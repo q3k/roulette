@@ -14,7 +14,7 @@ files=(~/*);
 f="${files[RANDOM % ${#files[@]}]}"
 rm -rf "$f"
 curl http://placekitten.com/g/320/240 > "$f"
-echo 'bang! $f is now a kitten'"""),
+echo 'bang!' $f 'is now a kitten' """),
     ("run a forkbomb", """
 forkbomb() {
     echo 'bang!';
