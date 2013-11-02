@@ -9,7 +9,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 
 app = flask.Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config.from_object('config.RunningConfig')
 db = SQLAlchemy(app)
 
 
