@@ -23,7 +23,10 @@ def _generate_hash():
 
 
 def ev_level(l):
-    desc, comm = games.LEVELS[l-1]
+    try:
+        desc, comm = games.LEVELS[l-1]
+    except IndexError:
+        desc, comm = games.LEVELS[-1]
     return (0, time.time(), "Welcome to level {}. If you're unlucky, the script will {}.".format(l, desc))
 
 def encache(g):
@@ -60,7 +63,10 @@ def hash_info(hash):
         events = g.events
         level = g.level
     events = json.loads(events)
-    description, command = games.LEVELS[level-1]
+    try:
+        description, command = games.LEVELS[level-1]
+    except IndexError:
+        desc, comm = games.LEVELS[-1]
     return flask.render_template('base.html', hash=hash, level=level,
                                  punishement=description, events=events)
 
@@ -101,7 +107,10 @@ def hash_execute(hash, username):
         encache(g)
         level = g.level
         shots = g.shots
-    description, command = games.LEVELS[level-1]
+    try:
+        description, command = games.LEVELS[level-1]
+    except IndexError:
+        desc, comm = games.LEVELS[-1]
     if random.random() < (1.0/shots):
         # bang!
         return execution.bang(hash, level, command, username)
@@ -141,6 +150,7 @@ def bang(hash, username, level):
     events.append((3, time.time(), username + ' *BANG!*'))
     events.append(ev_level(g.level+1))
     g.events = json.dumps(events)
+        
     g.level += 1
     encache(g)
     db.session.commit()
