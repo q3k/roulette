@@ -34,9 +34,9 @@ def encache(g):
     level = g.level
     events = g.events
     shots = g.shots
-    mc.set('l-' + hash.encode('ascii'), level)
-    mc.set('e-' + hash.encode('ascii'), events)
-    mc.set('s-' + hash.encode('ascii'), shots)
+    mc.set('l-' + hash.encode('ascii'), level, time=3600)
+    mc.set('e-' + hash.encode('ascii'), events, time=3600)
+    mc.set('s-' + hash.encode('ascii'), shots, time=3600)
 
 @app.route('/')
 def index():
