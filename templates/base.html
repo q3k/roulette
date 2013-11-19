@@ -95,7 +95,7 @@
                     var td_events = $("<td></td>").text(e[2]);
                     tr.append(td_date);
                     tr.append(td_events);
-                    result.push(new String(tr));
+                    result.push(tr.get(0).outerHTML);
                 });
                 $("#events").html(result.join(""));
             });
